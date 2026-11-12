@@ -1,6 +1,14 @@
 'use strict';
 // Add approved photos at images/{folder}/cover.jpg and they will appear automatically.
-// Contact channels are intentionally not active until the owner supplies public details.
+// SETUP: Enter one Cyprus mobile number (8 digits, e.g. 99xxxxxx) or 357 + 8 digits.
+// Leave empty until you are ready to publish your number.
+const OWNER_PHONE = '99352372';
+function contactPhone() {
+  const digits = OWNER_PHONE.replace(/\D/g, '');
+  const normalized = digits.length === 8 ? `357${digits}` : digits;
+  return /^357\d{8}$/.test(normalized) ? normalized : null;
+}
+// Each property gets its own WhatsApp inquiry message.
 const listings = [
   {id:1, folder:'livadia', location:['ΛΙΒΑΔΙΑ • ΛΕΥΚΩΣΙΑ','LIVADIA • NICOSIA'], name:['Οικιστικό τεμάχιο','Residential land plot'], price:'€79.000', area:'2.342 m²', zone:'H4', type:['Οικιστική γη','Residential land'], facts:[['Τεμάχιο 691','Parcel 691'],['Πολεοδομική ζώνη Η4','Planning zone H4'],['Δυνατότητα οικιστικής αξιοποίησης υπό τις απαραίτητες εγκρίσεις','Potential residential development subject to required approvals']]},
   {id:2, folder:'alona', location:['ΑΛΩΝΑ • ΚΡΥΟΣ','ALONA • KRIOS'], name:['Τρία αγροτικά τεμάχια','Three rural land parcels'], price:'€15.900', area:'7.759 m²', zone:'Z1', type:['Αγροτική γη','Rural land'], facts:[['Τεμάχια 1497, 1498, 1507','Parcels 1497, 1498, 1507'],['Πολεοδομική ζώνη Ζ1','Planning zone Z1'],['Αγροτικός δρόμος σε πολύ κοντινή απόσταση (δεν δηλώνεται άμεση πρόσβαση)','Agricultural road very close by (direct access not claimed)'],['Ξεχωριστοί τίτλοι ιδιοκτησίας','Separate title deeds']]},
@@ -34,15 +42,28 @@ function populateModal(item){if(!item)return;const slot=$('modal-content');slot.
   if(item.area){const area=document.createElement('p');area.textContent=textFor('Συνολική έκταση τεμαχίων: ','Total parcel area: ')+item.area;slot.append(area)}
   const ul=document.createElement('ul');item.facts.forEach(fact=>{const li=document.createElement('li');li.textContent=translate(fact);ul.append(li)});slot.append(ul);
   const disclaimer=document.createElement('p');disclaimer.className='explain';disclaimer.textContent=textFor('Οι περιγραφές είναι πληροφοριακές. Για εμβαδά, δικαιώματα, πρόσβαση, πολεοδομικούς όρους και επιτρεπόμενες χρήσεις απαιτείται έλεγχος των επίσημων εγγράφων.','Descriptions are informative. Official records must be checked for areas, ownership rights, access, planning terms and permitted uses.');slot.append(disclaimer);
-  const contact=document.createElement('div');contact.className='contact-note';contact.textContent=textFor('Στοιχεία επικοινωνίας ιδιοκτητών — θα προστεθούν πριν τη δημοσίευση','Owner contact details — to be added before publication');slot.append(contact);
+  const phone=contactPhone();
+  const contact=document.createElement('div');contact.className='contact-actions';
+  if (phone) {
+    const propertyLabel=`${translate(item.name)} – ${translate(item.location)}`;
+    const inquiry=textFor(
+      `Καλησπέρα, ενδιαφέρομαι για το ακίνητο ${propertyLabel} (καταχώριση #${item.id}). Θα ήθελα περισσότερες πληροφορίες.`,
+      `Hello, I am interested in ${propertyLabel} (listing #${item.id}). Could you provide more information?`
+    );
+    const whatsapp=document.createElement('a');whatsapp.className='contact-link whatsapp';
+    whatsapp.href=`https://wa.me/${phone}?text=${encodeURIComponent(inquiry)}`;
+    whatsapp.target='_blank';whatsapp.rel='noopener noreferrer';
+    whatsapp.textContent=textFor('Επικοινωνία μέσω WhatsApp','Contact via WhatsApp');
+    const call=document.createElement('a');call.className='contact-link call';
+    call.href=`tel:+${phone}`;call.textContent=textFor('Τηλεφωνική επικοινωνία','Call the owner');
+    contact.append(whatsapp,call);
+  } else {
+    const notice=document.createElement('p');notice.className='contact-unconfigured';
+    notice.textContent=textFor('Η επικοινωνία θα ενεργοποιηθεί μόλις προστεθεί ο αριθμός τηλεφώνου.','Contact options will be enabled once a phone number is configured.');
+    contact.append(notice);
+  }
+  slot.append(contact);
 }
 function openModal(id){activeId=id;populateModal(listings.find(p=>p.id===id));$('property-modal').hidden=false;$('modal-close').focus();document.body.style.overflow='hidden'}
 function closeModal(){$('property-modal').hidden=true;document.body.style.overflow='';activeId=null;}
 $('language-button').addEventListener('click',()=>{language=language==='gr'?'en':'gr';render()});$('modal-close').addEventListener('click',closeModal);$('property-modal').addEventListener('click',event=>{if(event.target===$('property-modal'))closeModal()});document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('property-modal').hidden)closeModal()});render();
-
-const phone = "35799352372";
-const message = encodeURIComponent(
-  `Καλησπέρα, ενδιαφέρομαι για το ακίνητο ${property.name}.`
-);
-const whatsappUrl = `https://wa.me/${phone}?text=${message}`;
-const callUrl = `tel:+${phone}`;

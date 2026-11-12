@@ -19,7 +19,8 @@ Open `index.html` in a browser. No build process, server, libraries or database 
 - Replace the placeholders with actual approved property images. For each listing, place its real main image at `images/<folder>/cover.jpg`. Folders: `livadia`, `alona`, `alithinou`, `polystypos`. Image display is automatic.
 - Verify areas, zones, title deeds, access and shares against official cadastral documents.
 - Set the asking price of the Polystypos building if desired.
-- Add approved phone / email / WhatsApp contact links; these are **not active** in this review version.
+- Enable the WhatsApp and phone buttons by editing **`js/main.js`** and setting `const OWNER_PHONE = '99XXXXXX';` to your actual Cyprus mobile number (8 digits) or `357` plus 8 digits. Leave it empty and both buttons remain hidden. Do not publish `XXXXXXXX` as a phone number.
+- WhatsApp messages are personalized to the property and language; phone links use the same number. Public repositories expose this number to everyone.
 - Avoid uploading title deeds, personal IDs or scans with personal data to this public repo.
 
 ## Editing content
