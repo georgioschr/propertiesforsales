@@ -39,3 +39,10 @@ function populateModal(item){if(!item)return;const slot=$('modal-content');slot.
 function openModal(id){activeId=id;populateModal(listings.find(p=>p.id===id));$('property-modal').hidden=false;$('modal-close').focus();document.body.style.overflow='hidden'}
 function closeModal(){$('property-modal').hidden=true;document.body.style.overflow='';activeId=null;}
 $('language-button').addEventListener('click',()=>{language=language==='gr'?'en':'gr';render()});$('modal-close').addEventListener('click',closeModal);$('property-modal').addEventListener('click',event=>{if(event.target===$('property-modal'))closeModal()});document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('property-modal').hidden)closeModal()});render();
+
+const phone = "35799352372";
+const message = encodeURIComponent(
+  `Καλησπέρα, ενδιαφέρομαι για το ακίνητο ${property.name}.`
+);
+const whatsappUrl = `https://wa.me/${phone}?text=${message}`;
+const callUrl = `tel:+${phone}`;
